@@ -63,7 +63,7 @@ const SignInScreen = () => {
                 <Image source={Logo} style={styles.logo} resizeMode="contain" />
                 <SvgTop/>
             </View>
-            <Text style={styles.titulo}>Login</Text>
+            <Text style={styles.titulo}>Iniciar Sesión</Text>
             <View style={styles.containerLeft}>
                 <Text style={styles.label}>Usuario</Text>
             </View>
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
       backgroundColor:'#fff'
     },
     logo:{
-        marginTop:30,
+        marginTop:40,
         width:'65%',
         height: '60%',
         position: 'absolute',
@@ -120,10 +120,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     titulo:{
-       fontSize:40,
+       fontSize:30,
        fontWeight: 'bold',
        position: 'absolute',
-       marginTop:225,
+       marginTop:235,
+       color:'#CCC',
         
     },
   
