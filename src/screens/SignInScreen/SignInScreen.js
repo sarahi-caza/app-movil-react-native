@@ -3,14 +3,24 @@
 @flow strict-local
 */
 
-import React from "react";
-import { StyleSheet, TextInput, View, Text, Image, Dimensions } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View, Text, Image, Dimensions, useWindowDimensions, ScrollView } from "react-native";
 import Logo from "../../../assets/images/logoAW.png";
 import Svg, {Path, Defs, LinearGradient, Stop} from 'react-native-svg';
 const { width, height} = Dimensions.get('window')
-
+import CustomImput from "../../components/CustomInput";
+import CustomButton from "../../components/CustomButton";
 
 const SignInScreen = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const {height} = useWindowDimensions();
+    const onSignInPressed = () => {
+        console.warn("Inicio Sesión")
+    }
+    const onForgotPassword = () => {
+        console.warn("Olvidó Contraseña")
+    }
     function SvgTop() {
         return (
           <Svg
@@ -58,54 +68,47 @@ const SignInScreen = () => {
     
 
     return(
-        <View style={styles.mainContainer}>
-            <View style={styles.containerSVG}>
-                <Image source={Logo} style={styles.logo} resizeMode="contain" />
-                <SvgTop/>
-            </View>
+      <ScrollView style={styles.scrollContainer}>
+      <View style={styles.mainContainer}>
+        <View style={styles.containerSVG}>
+          <Image 
+            source={Logo} 
+            style={styles.logo} 
+            resizeMode="contain" 
+          />
+          <SvgTop/>
+          </View>
             <Text style={styles.titulo}>Iniciar Sesión</Text>
-            <View style={styles.containerLeft}>
-                <Text style={styles.label}>Usuario</Text>
-            </View>
-            <TextInput
-                style={styles.inputText}
-                placeholder='Ingrese Cédula'
+            <CustomImput
+              placeholder='Ingrese Usuario (Cédula)'
+              value={username}
+              setValue={setUsername}
+              keyboardType='numeric'
+              maxLength= {10}
             />
-            <View style={styles.containerLeft}>
-                <Text style={styles.label}>Contraseña</Text>
-            </View>
-            <TextInput
-                style={styles.inputText}
-                placeholder='Ingrese Contraseña'
-                secureTextEntry={true}
-            />
- 
-        </View>
-
+            <CustomImput
+              placeholder='Ingrese Contraseña'
+              value={password}
+              setValue={setPassword}
+              secureTextEntry={true}
+            /> 
+            <CustomButton text="Iniciar Sesión" onPress={onSignInPressed}/>
+            <CustomButton text="¿Olvidó su Contraseña?" onPress={onForgotPassword} type="TERTIARY" />
+      </View>
+      </ScrollView >
     )
 }
 const styles = StyleSheet.create({
     mainContainer: {
+        height:'100%',
+        backgroundColor: '#f1f1f1',
+        flex: 1,
+        alignItems: 'center',
+    },
+    scrollContainer:{
+      height:'100%',
       backgroundColor: '#f1f1f1',
       flex: 1,
-      alignItems: 'center',
-    },
-    containerLeft: {
-      width:'80%',
-    },
-    label:{
-      fontSize:21,
-      color:'gray',
-      marginTop:15,
-    },
-    inputText:{
-      paddingStart:30,
-      borderRadius:20,
-      padding:10,
-      width:'80%',
-      height: 50,
-      marginTop:2,
-      backgroundColor:'#fff'
     },
     logo:{
         marginTop:40,
@@ -116,6 +119,7 @@ const styles = StyleSheet.create({
     },
     containerSVG: {
         width: width,
+        maxWidth:300,
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
