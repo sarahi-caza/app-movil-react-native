@@ -5,6 +5,7 @@ import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import UpdatePasswordScreen from './src/screens/UpdatePasswordScreen';
 import Navigation from './Navigation';
 
+
 const App = () => {
   return (
     <SafeAreaView style={styles.root}>
