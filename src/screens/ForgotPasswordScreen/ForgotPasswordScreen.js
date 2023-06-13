@@ -3,12 +3,14 @@ import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
 const { width, height} = Dimensions.get('window')
 import CustomButton from "../../components/CustomButton/CustomButton";
 import CustomImput from "../../components/CustomInput/CustomInput";
+import { useNavigation } from '@react-navigation/native'; 
 
 const ForgotPasswordScreen = () => {
     const [username, setUsername] = useState('');
-    
+    const navigation = useNavigation();
+
     const onSendPress = () => {
-        console.warn("Olvidó Contraseña")
+        navigation.navigate("SignIn")
     }
 
     return(
@@ -22,7 +24,9 @@ const ForgotPasswordScreen = () => {
               keyboardType='numeric'
               maxLength= {10}
             />
-            <CustomButton text="Enviar" onPress={onSendPress}/>
+            <CustomButton 
+                text="Enviar" 
+                onPress={onSendPress} />
             
         </View>
       </ScrollView>

@@ -1,8 +1,3 @@
-/** 
-@format
-@flow strict-local
-*/
-
 import React, { useState } from "react";
 import { StyleSheet, View, Text, Image, Dimensions, useWindowDimensions, ScrollView } from "react-native";
 import Logo from "../../../assets/images/logoAW.png";
@@ -10,16 +5,29 @@ import Svg, {Path, Defs, LinearGradient, Stop} from 'react-native-svg';
 const { width, height} = Dimensions.get('window')
 import CustomImput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
+import { useNavigation } from '@react-navigation/native'; 
+
 
 const SignInScreen = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const {height} = useWindowDimensions();
+    //const {height} = useWindowDimensions();
+    
+    const navigation = useNavigation();
+        
     const onSignInPressed = () => {
-        console.warn("Inicio Sesión")
+      //validar usuario
+
+      //primer inicio
+        navigation.navigate("UpdatePassword")
+
+      // a partir del segundo inicio
+      //navigation.navigate("NavigationStack")
+    
     }
+    
     const onForgotPassword = () => {
-        console.warn("Olvidó Contraseña")
+      navigation.navigate("ForgotPassword")
     }
     function SvgTop() {
         return (
@@ -68,6 +76,7 @@ const SignInScreen = () => {
     
 
     return(
+      
       <ScrollView style={styles.scrollContainer}>
       <View style={styles.mainContainer}>
         <View style={styles.containerSVG}>
@@ -96,6 +105,7 @@ const SignInScreen = () => {
             <CustomButton text="¿Olvidó su Contraseña?" onPress={onForgotPassword} type="TERTIARY" />
       </View>
       </ScrollView >
+      
     )
 }
 const styles = StyleSheet.create({

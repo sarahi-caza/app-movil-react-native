@@ -3,12 +3,16 @@ import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
 const { width, height} = Dimensions.get('window')
 import CustomButton from "../../components/CustomButton/CustomButton";
 import CustomImput from "../../components/CustomInput/CustomInput";
+import { useNavigation } from '@react-navigation/native'; 
+
+
 
 const UpdatePasswordScreen = () => {
     const [password, setPassword] = useState('');
+    const navigation = useNavigation();
        
     const onUpdatePasswordPress = () => {
-        console.warn("Contraseña Actualizada")
+        navigation.navigate("NavigationStack")
     }
 
     return(

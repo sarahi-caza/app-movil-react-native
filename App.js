@@ -4,19 +4,39 @@ import SignInScreen from './src/screens/SignInScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import UpdatePasswordScreen from './src/screens/UpdatePasswordScreen';
 import Navigation from './Navigation';
+import {NavigationContainer } from '@react-navigation/native'; 
+import {createNativeStackNavigator } from "@react-navigation/native-stack"; 
 
 
+const StackNavigator = createNativeStackNavigator();
 const App = () => {
-  return (
-    <SafeAreaView style={styles.root}>
-      <Navigation/>
-    </SafeAreaView>
-  );
-};
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  }
-});
+    return(
+      <NavigationContainer>
+  
+        <StackNavigator.Navigator
+          screenOptions={{headerShown:false}}
+          initialRouteName="SignIn"
+        >
+            <StackNavigator.Screen
+                name="SignIn"
+                component={SignInScreen}
+            />
+            <StackNavigator.Screen
+                name="NavigationStack"
+                component={Navigation}
+            />
+            <StackNavigator.Screen
+                name="ForgotPassword"
+                component={ForgotPasswordScreen}
+            />
+            <StackNavigator.Screen
+                name="UpdatePassword"
+                component={UpdatePasswordScreen}
+            />
+        </StackNavigator.Navigator>
+        </NavigationContainer>
+    )
+}
+
 
 export default App;
