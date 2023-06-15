@@ -2,11 +2,13 @@ import React, {useState} from "react";
 import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
 const { width, height} = Dimensions.get('window')
 import CustomButton from "../../components/CustomButton/CustomButton";
-import CustomImput from "../../components/CustomInput/CustomInput";
+import CustomInput from "../../components/CustomInput/CustomInput";
 import { useNavigation } from '@react-navigation/native'; 
+import {useForm, Controller} from 'react-hook-form';
+
 
 const ForgotPasswordScreen = () => {
-    const [username, setUsername] = useState('');
+    const {control, handleSubmit} = useForm();
     const navigation = useNavigation();
 
     const onSendPress = () => {
@@ -17,12 +19,12 @@ const ForgotPasswordScreen = () => {
         <ScrollView style={styles.scrollContainer}>
         <View style={styles.mainContainer}>
             <Text style={styles.title}>Recuperación de Contraseña</Text>
-            <CustomImput
+            <CustomInput
+              name='username'
               placeholder='Ingrese Usuario (Cédula)'
-              value={username}
-              setValue={setUsername}
               keyboardType='numeric'
               maxLength= {10}
+              control={control}
             />
             <CustomButton 
                 text="Enviar" 

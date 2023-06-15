@@ -2,13 +2,15 @@ import React, {useState} from "react";
 import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
 const { width, height} = Dimensions.get('window')
 import CustomButton from "../../components/CustomButton/CustomButton";
-import CustomImput from "../../components/CustomInput/CustomInput";
+import CustomInput from "../../components/CustomInput/CustomInput";
 import { useNavigation } from '@react-navigation/native'; 
+import {useForm, Controller} from 'react-hook-form';
 
 
 
 const UpdatePasswordScreen = () => {
-    const [password, setPassword] = useState('');
+    
+    const {control, handleSubmit} = useForm();
     const navigation = useNavigation();
        
     const onUpdatePasswordPress = () => {
@@ -19,17 +21,17 @@ const UpdatePasswordScreen = () => {
         <ScrollView style={styles.scrollContainer}>
         <View style={styles.mainContainer}>
             <Text style={styles.title}>Actualización de Contraseña</Text>
-            <CustomImput
-              placeholder='Ingresa Contraseña'
-              value={password}
-              setValue={setPassword}
+            <CustomInput
+              name='password'
+              placeholder='Ingrese Contraseña'
               secureTextEntry={true}
+              control={control}
             />
-            <CustomImput
+            <CustomInput
+              name='repeatPassword'
               placeholder='Ingresa Contraseña Nuevamente'
-              value={password}
-              setValue={setPassword}
               secureTextEntry={true}
+              control={control}
             />
             <CustomButton text="Actualizar" onPress={onUpdatePasswordPress}/>
             

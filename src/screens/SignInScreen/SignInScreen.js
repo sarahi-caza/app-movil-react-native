@@ -1,21 +1,22 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, Image, Dimensions, useWindowDimensions, ScrollView } from "react-native";
+import { StyleSheet, View, Text, TextInput, Image, Dimensions, useWindowDimensions, ScrollView } from "react-native";
 import Logo from "../../../assets/images/logoAW.png";
 import Svg, {Path, Defs, LinearGradient, Stop} from 'react-native-svg';
 const { width, height} = Dimensions.get('window')
-import CustomImput from "../../components/CustomInput";
+import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
 import { useNavigation } from '@react-navigation/native'; 
+import {useForm, Controller} from 'react-hook-form';
 
 
 const SignInScreen = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    //const {height} = useWindowDimensions();
     
-    const navigation = useNavigation();
-        
-    const onSignInPressed = () => {
+  const navigation = useNavigation();
+  
+  const {control, handleSubmit} = useForm();
+
+    const onSignInPressed = data => {
+      console.log(data);
       //validar usuario
 
       //primer inicio
@@ -88,20 +89,21 @@ const SignInScreen = () => {
           <SvgTop/>
           </View>
             <Text style={styles.titulo}>Iniciar Sesión</Text>
-            <CustomImput
+            <CustomInput
+              name='username'
               placeholder='Ingrese Usuario (Cédula)'
-              value={username}
-              setValue={setUsername}
               keyboardType='numeric'
               maxLength= {10}
+              control={control}
             />
-            <CustomImput
+            <CustomInput
+              name='password'
               placeholder='Ingrese Contraseña'
-              value={password}
-              setValue={setPassword}
               secureTextEntry={true}
+              control={control}
+              
             /> 
-            <CustomButton text="Iniciar Sesión" onPress={onSignInPressed}/>
+            <CustomButton text="Iniciar Sesión" onPress={handleSubmit(onSignInPressed)}/>
             <CustomButton text="¿Olvidó su Contraseña?" onPress={onForgotPassword} type="TERTIARY" />
       </View>
       </ScrollView >

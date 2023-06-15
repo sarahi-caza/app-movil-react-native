@@ -5,7 +5,7 @@ import {NavigationContainer} from "@react-navigation/native";
 import {createNativeStackNavigator } from "@react-navigation/native-stack"; 
 import HomeScreen from "./src/screens/NavigationScreen/HomeScreen";
 import MapScreen from "./src/screens/NavigationScreen/MapScreen";
-import ChatScreen from "./src/screens/NavigationScreen/ChatScreen";
+import ProfileScreen from "./src/screens/NavigationScreen/ProfileScreen";
 import ListaStackScreen from "./src/screens/NavigationScreen/ListaStackScreen";
 import { Ionicons } from '@expo/vector-icons';
 
@@ -42,12 +42,12 @@ const MyTabs = () => {
                 }}
             />
             <Tab.Screen 
-                name="Chat"
-                component={ChatScreen}
+                name="Profile"
+                component={ProfileScreen}
                 options={{
-                    tabBarLabel: 'Chat',
+                    tabBarLabel: 'Perfil',
                     tabBarIcon: ({}) => (
-                        <Ionicons name="chatbubble-ellipses" size={24} color="#00b8d4" />
+                        <Ionicons name="person-circle" size={24} color="#00b8d4" />
                 ),
                 }}
             />
