@@ -7,6 +7,7 @@ import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
 import { useNavigation } from '@react-navigation/native'; 
 import {useForm, Controller} from 'react-hook-form';
+import callApi from "../../lib/api";
 
 
 const SignInScreen = () => {
@@ -15,16 +16,41 @@ const SignInScreen = () => {
   
   const {control, handleSubmit} = useForm();
 
-    const onSignInPressed = data => {
+    const API_EMAIL = 'admin@admin.com'
+    const API_PWD = 'admin123'
+    const API_NAME = 'admin'
+        
+    const onSignInPressed = async data => {
       console.log(data);
-      //validar usuario
-
-      //primer inicio
-        navigation.navigate("UpdatePassword")
-
-      // a partir del segundo inicio
-      //navigation.navigate("NavigationStack")
-    
+      const headers = {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+      let body = JSON.stringify({
+        email: API_EMAIL,
+        password: API_PWD,
+        name: API_NAME
+      })
+      //obtener TOKEN
+      const respToken = await callApi('/api/login', headers, body)
+      if(respToken.status == 'success'){
+        headers.Authorization = 'Bearer ' + respToken.token
+        body = JSON.stringify({
+          cedula: data.username,
+          clave: data.password
+        })
+        const respLogin = await callApi('/api/apiLogin', headers, body)
+        if(respLogin.status == 'success'){
+          //setear variables de entorno y crear sesión
+          if(respLogin.actualizarClave){
+            navigation.navigate("UpdatePassword")
+          } else{
+            navigation.navigate("NavigationStack")
+          }
+        }else{
+          console.log(respLogin.message)
+        }
+      }
     }
     
     const onForgotPassword = () => {
