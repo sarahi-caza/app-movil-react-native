@@ -1,119 +1,113 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import {Switch, ScrollView, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import Constants from 'expo-constants';
-import * as Animatable from 'react-native-animatable';
-import Collapsible from 'react-native-collapsible';
-import Accordion from 'react-native-collapsible/Accordion';
+import {Collapse,CollapseHeader, CollapseBody, AccordionList} from 'accordion-collapse-react-native';
+import callApi from "../../lib/api";
 
-const CONTENT = [
-  {
-    title: 'Lunes',
-    content: 'Lunes',
-  },
-  {
-    title: 'Martes',
-    content: 'Martes',
-  },
-  {
-    title: 'Miércoles',
-    content: 'Miércoles',
-  },
-  {
-    title: 'Jueves',
-    content: 'Jueves',
-  },
-  {
-    title: 'Viernes',
-    content: 'Viernes',
-  },
-  {
-    title: 'Sábado',
-    content: 'Sábado',
-  },
-  {
-    title: 'Domingo',
-    content: 'Domingo',
-  },
-];
+const HomeScreen = () => {
 
-export default class App extends Component {
-  state = {
-    activeSections: [],
-    collapsed: true,
-    multipleSelect: false,
-  };
+  const [data, setData] = useState("");
 
-  toggleExpanded = () => {
-    this.setState({ collapsed: !this.state.collapsed });
-  };
+    useEffect(()=>{
 
-  setSections = (sections) => {
-    this.setState({
-      activeSections: sections.includes(undefined) ? [] : sections,
-    });
-  };
-
-  renderHeader = (section, _, isActive) => {
-    return (
-      <Animatable.View
-        duration={400}
-        style={[styles.header, isActive ? styles.active : styles.inactive]}
-        transition="backgroundColor"
-      >
-        <Text style={styles.headerText}>{section.title}</Text>
-      </Animatable.View>
-    );
-  };
-
-  renderContent(section, _, isActive) {
-    return (
-      <Animatable.View
-        duration={400}
-        style={[styles.content, isActive ? styles.active : styles.inactive]}
-        transition="backgroundColor"
-      >
-        <Text>{section.content}</Text>
-      </Animatable.View>
-    );
-  }
-
-  render() {
-    const { multipleSelect, activeSections } = this.state;
-
-    return (
-      <View style={styles.container}>
-        <ScrollView>
-            <View style={styles.multipleToggle}>
-                <Text style={styles.multipleToggle__title}>Bienvenido a AirWay</Text>
+      const getData = async () => {
+    
+        TOKEN = '648b32db84633961ac012414|1I6ht482IlLU47XEZDHfK58th1tPgc0DXHgDpLcw';
+        ID_USUARIO = '64691085565f1a01700ddc44';
+        AREA = 'TWR';
+    
+        const headers = {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + TOKEN
+        }
+        const body = JSON.stringify({
+          id_usuario: ID_USUARIO,
+          area: AREA
+        })
+        const respHorario = await callApi('/api/getHorario', headers, body)
+          if(respHorario.status == 'success'){
+          //console.log (respHorario)
+          setData(respHorario)
+          }
+      }
+      getData();
+  }, [data])
+  return (
+    <View style={styles.container}>
+      <ScrollView>
+        <Collapse>
+          <CollapseHeader>
+            <View>
+              <Text>Lunes</Text>
             </View>
-            <View style={styles.subtitle}>
-                <Text style={{fontSize:20}}>Hola ...... : tu turno semanal</Text>
+          </CollapseHeader>
+          <CollapseBody>
+            <Text> {data.lunes} </Text>
+          </CollapseBody>
+        </Collapse>
+        <Collapse>
+          <CollapseHeader>
+            <View>
+              <Text>Martes</Text>
             </View>
-            <Collapsible collapsed={this.state.collapsed}>
-                <View style={styles.content}>
-                    <Animatable.Text
-                        animation={this.state.collapsed ? undefined : 'zoomIn'}
-                        duration={200}
-                        useNativeDriver>
-                    </Animatable.Text>
-                </View>
-          </Collapsible>
-          <Accordion
-            align="bottom"
-            activeSections={activeSections}
-            sections={CONTENT}
-            touchableComponent={TouchableOpacity}
-            expandMultiple={multipleSelect}
-            renderHeader={this.renderHeader}
-            renderContent={this.renderContent}
-            duration={300}
-            onChange={this.setSections}
-            renderAsFlatList={false}
-          />
-        </ScrollView>
-      </View>
-    );
-  }
+          </CollapseHeader>
+          <CollapseBody>
+            <Text> {data.martes} </Text>
+          </CollapseBody>
+        </Collapse>
+        <Collapse>
+          <CollapseHeader>
+            <View>
+              <Text>Miercoles</Text>
+            </View>
+          </CollapseHeader>
+          <CollapseBody>
+            <Text> {data.miercoles} </Text>
+          </CollapseBody>
+        </Collapse>
+        <Collapse>
+          <CollapseHeader>
+            <View>
+              <Text>Jueves</Text>
+            </View>
+          </CollapseHeader>
+          <CollapseBody>
+            <Text> {data.jueves} </Text>
+          </CollapseBody>
+        </Collapse>
+        <Collapse>
+          <CollapseHeader>
+            <View>
+              <Text>Viernes</Text>
+            </View>
+          </CollapseHeader>
+          <CollapseBody>
+            <Text> {data.viernes} </Text>
+          </CollapseBody>
+        </Collapse>
+        <Collapse>
+          <CollapseHeader>
+            <View>
+              <Text>Sábado</Text>
+            </View>
+          </CollapseHeader>
+          <CollapseBody>
+            <Text> {data.sabado} </Text>
+          </CollapseBody>
+        </Collapse>
+        <Collapse>
+          <CollapseHeader>
+            <View>
+              <Text>Domingo</Text>
+            </View>
+          </CollapseHeader>
+          <CollapseBody>
+            <Text> {data.domingo} </Text>
+          </CollapseBody>
+        </Collapse>
+      </ScrollView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -122,10 +116,6 @@ const styles = StyleSheet.create({
     height:'100%',
     backgroundColor: '#8AD2DD',
     },
-  /*title: {
-    textAlign: 'center',
-    fontSize: 32,
-   },*/
    subtitle: {
     backgroundColor: '#F5FCFF',
     flexDirection: 'row',
@@ -163,3 +153,4 @@ const styles = StyleSheet.create({
   },
   
 });
+export default HomeScreen; 
