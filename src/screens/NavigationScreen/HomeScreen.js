@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {Switch, ScrollView, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {Collapse,CollapseHeader, CollapseBody, AccordionList} from 'accordion-collapse-react-native';
 import callApi from "../../lib/api";
@@ -34,75 +34,76 @@ const HomeScreen = () => {
   }, [data])
   return (
     <View style={styles.container}>
+      <Text style={styles.subtitle} >Hola.... este es tu horario semanal</Text>
       <ScrollView>
         <Collapse>
           <CollapseHeader>
             <View>
-              <Text>Lunes</Text>
+              <Text style={styles.headerText}>Lunes</Text>
             </View>
           </CollapseHeader>
           <CollapseBody>
-            <Text> {data.lunes} </Text>
+            <Text style={styles.active}> {data.lunes} </Text>
           </CollapseBody>
         </Collapse>
         <Collapse>
           <CollapseHeader>
             <View>
-              <Text>Martes</Text>
+              <Text style={styles.headerText}>Martes</Text>
             </View>
           </CollapseHeader>
           <CollapseBody>
-            <Text> {data.martes} </Text>
+            <Text style={styles.active}> {data.martes} </Text>
           </CollapseBody>
         </Collapse>
         <Collapse>
           <CollapseHeader>
             <View>
-              <Text>Miercoles</Text>
+              <Text style={styles.headerText}>Miercoles</Text>
             </View>
           </CollapseHeader>
           <CollapseBody>
-            <Text> {data.miercoles} </Text>
+            <Text style={styles.active}> {data.miercoles} </Text>
           </CollapseBody>
         </Collapse>
         <Collapse>
           <CollapseHeader>
             <View>
-              <Text>Jueves</Text>
+              <Text style={styles.headerText}>Jueves</Text>
             </View>
           </CollapseHeader>
           <CollapseBody>
-            <Text> {data.jueves} </Text>
+            <Text style={styles.active}> {data.jueves} </Text>
           </CollapseBody>
         </Collapse>
         <Collapse>
           <CollapseHeader>
             <View>
-              <Text>Viernes</Text>
+              <Text style={styles.headerText}>Viernes</Text>
             </View>
           </CollapseHeader>
           <CollapseBody>
-            <Text> {data.viernes} </Text>
+            <Text style={styles.active}> {data.viernes} </Text>
           </CollapseBody>
         </Collapse>
         <Collapse>
           <CollapseHeader>
             <View>
-              <Text>Sábado</Text>
+              <Text style={styles.headerText}>Sábado</Text>
             </View>
           </CollapseHeader>
           <CollapseBody>
-            <Text> {data.sabado} </Text>
+            <Text style={styles.active}> {data.sabado} </Text>
           </CollapseBody>
         </Collapse>
         <Collapse>
           <CollapseHeader>
             <View>
-              <Text>Domingo</Text>
+              <Text style={styles.headerText}>Domingo</Text>
             </View>
           </CollapseHeader>
           <CollapseBody>
-            <Text> {data.domingo} </Text>
+            <Text style={styles.active}> {data.domingo} </Text>
           </CollapseBody>
         </Collapse>
       </ScrollView>
@@ -117,40 +118,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#8AD2DD',
     },
    subtitle: {
-    backgroundColor: '#F5FCFF',
-    flexDirection: 'row',
-    marginTop: 13,
-    marginBottom:20,
+    marginTop: 12,
+    marginBottom: 12,
+    fontSize: 19,
+    color: '#091585',
     },
-   header: {
-    backgroundColor: '#F5FCFF',
-    padding: 18,
-  },
   headerText: {
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 25,
     color: '#091585',
-  },
-  content: {
-    padding: 20,
-    backgroundColor: '#D6F0E7',
+    padding: 12,
   },
   active: {
+    padding: 9,
+    fontSize: 18,
     backgroundColor: '#B6F2FB',
+    textAlign: 'center',
   },
-  inactive: {
-    backgroundColor: '#8AD2DD',
-  },
-  multipleToggle: {
-    backgroundColor: '#F5FCFF',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    },
-  multipleToggle__title: {
-    marginTop:12,
-    fontSize: 27,
-    color: '#061389',
-  },
-  
+ 
 });
 export default HomeScreen; 

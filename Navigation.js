@@ -27,7 +27,6 @@ const MyTabs = () => {
                     tabBarIcon: ({}) => (
                         <Ionicons name="home" size={24} color="#00b8d4" />
                     ),
-                    
                 }} 
             />
             <Tab.Screen
