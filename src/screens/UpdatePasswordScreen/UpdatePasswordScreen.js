@@ -5,16 +5,38 @@ import CustomButton from "../../components/CustomButton/CustomButton";
 import CustomInput from "../../components/CustomInput/CustomInput";
 import { useNavigation } from '@react-navigation/native'; 
 import {useForm, Controller} from 'react-hook-form';
-
-
+import callApi from "../../lib/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const UpdatePasswordScreen = () => {
     
     const {control, handleSubmit} = useForm();
     const navigation = useNavigation();
        
-    const onUpdatePasswordPress = () => {
-        navigation.navigate("NavigationStack")
+    const onUpdatePasswordPress = async data => {
+        console.log(data);
+        if(data.password == data.repeatPassword){
+            const token = await AsyncStorage.getItem('token');
+            const user = JSON.parse(await AsyncStorage.getItem('user'));
+                
+            const headers = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: token
+            }
+            const body = JSON.stringify({
+            id_usuario: user.id_usuario,
+            rol: user.rol,
+            newPwd: data.password
+            })
+            const respClave = await callApi('/api/actualizarPwd', headers, body)
+            if(respClave.status == 'success'){
+                navigation.navigate("NavigationStack")
+            }
+        } else{
+            console.log('Contraseñas son diferentes')
+        }
+            
     }
 
     return(
@@ -33,7 +55,7 @@ const UpdatePasswordScreen = () => {
               secureTextEntry={true}
               control={control}
             />
-            <CustomButton text="Actualizar" onPress={onUpdatePasswordPress}/>
+            <CustomButton text="Actualizar" onPress={handleSubmit(onUpdatePasswordPress)}/>
             
         </View>
       </ScrollView>

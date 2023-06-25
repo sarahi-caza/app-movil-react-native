@@ -1,45 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import {Text, View, StyleSheet} from"react-native";
 import CustomButton from "../../components/CustomButton";
-import callApi from "../../lib/api";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native'; 
+
 
 const ProfileScreen = () => {
-
-    const [data, setData] = useState("");
+    const navigation = useNavigation();
+    const [data, setData] = useState({});
 
     useEffect(()=>{
 
-      const getData = async () => {
-    
-        TOKEN = '648b32db84633961ac012414|1I6ht482IlLU47XEZDHfK58th1tPgc0DXHgDpLcw';
-        CEDULA = '1712345679';
-        CLAVE = 'xm1c6f';
-    
-        const headers = {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + TOKEN
-        }
-        const body = JSON.stringify({
-          cedula: CEDULA,
-          clave: CLAVE,
-        })
-        const respPerfil = await callApi('/api/apiLogin', headers, body)
-          if(respPerfil.status == 'success'){
-          console.log (respPerfil)
-          setData(respPerfil)
-          }
-      }
+    const getData = async () => {
+        const user = JSON.parse(await AsyncStorage.getItem('user'));
+        setData(user)
+    }
       getData();
-  }, [data])
+  }, [])
 
+  const logOut = async () => {
+    navigation.navigate("SignIn")
+    await AsyncStorage.multiRemove(['token','user','horario'])
+  }
     return(
-       <View >
+       <View>
             <Text style={styles.title}> Dator Personales</Text>
             <Text style={styles.text}> Nombre: {data.nombre} {data.apellido}</Text>
             <Text style={styles.text}> Celular: {data.celular}</Text>
-            <Text style={styles.text}> Area: {data.area}</Text>
-            <View style={styles.mainContainer}><CustomButton text="Cerrar Sesión" /></View>
+            {data.rol == 'empleado' && <Text style={styles.text}> Area: {data.area}</Text>}
+            <View style={styles.mainContainer}><CustomButton text="Cerrar Sesión" onPress={logOut}/></View>
         </View>
     
     

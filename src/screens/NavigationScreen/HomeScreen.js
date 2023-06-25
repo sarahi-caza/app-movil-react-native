@@ -2,39 +2,41 @@ import React, { useEffect, useState } from 'react';
 import {Switch, ScrollView, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {Collapse,CollapseHeader, CollapseBody, AccordionList} from 'accordion-collapse-react-native';
 import callApi from "../../lib/api";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = () => {
 
   const [data, setData] = useState("");
+  const [usuario, setUsuario] = useState({});
 
     useEffect(()=>{
 
       const getData = async () => {
     
-        TOKEN = '648b32db84633961ac012414|1I6ht482IlLU47XEZDHfK58th1tPgc0DXHgDpLcw';
-        ID_USUARIO = '64691085565f1a01700ddc44';
-        AREA = 'TWR';
-    
+        const token = await AsyncStorage.getItem('token');
+        const user = JSON.parse(await AsyncStorage.getItem('user'));
+        setUsuario(user)
+            
         const headers = {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + TOKEN
+          Authorization: token
         }
         const body = JSON.stringify({
-          id_usuario: ID_USUARIO,
-          area: AREA
+          id_usuario: user.id_usuario,
+          area: user.area,
         })
         const respHorario = await callApi('/api/getHorario', headers, body)
-          if(respHorario.status == 'success'){
-          //console.log (respHorario)
+        if(respHorario.status == 'success'){
           setData(respHorario)
-          }
+          await AsyncStorage.setItem('horario', JSON.stringify(respHorario));
+        }
       }
       getData();
-  }, [data])
+  }, [])
   return (
     <View style={styles.container}>
-      <Text style={styles.subtitle} >Hola.... este es tu horario semanal</Text>
+      <Text style={styles.subtitle} >Hola {usuario?.nombre} {usuario?.apellido}, tu horario semanal</Text>
       <ScrollView>
         <Collapse>
           <CollapseHeader>

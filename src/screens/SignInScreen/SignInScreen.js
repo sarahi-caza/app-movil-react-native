@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TextInput, Image, Dimensions, useWindowDimensions, ScrollView } from "react-native";
+import { StyleSheet, View, Text, Image, Dimensions, ScrollView } from "react-native";
 import Logo from "../../../assets/images/logoAW.png";
 import Svg, {Path, Defs, LinearGradient, Stop} from 'react-native-svg';
 const { width, height} = Dimensions.get('window')
@@ -8,7 +8,7 @@ import CustomButton from "../../components/CustomButton";
 import { useNavigation } from '@react-navigation/native'; 
 import {useForm, Controller} from 'react-hook-form';
 import callApi from "../../lib/api";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignInScreen = () => {
     
@@ -34,14 +34,19 @@ const SignInScreen = () => {
       //obtener TOKEN
       const respToken = await callApi('/api/login', headers, body)
       if(respToken.status == 'success'){
-        headers.Authorization = 'Bearer ' + respToken.token
+        const token = 'Bearer ' + respToken.token
+        await AsyncStorage.setItem('token', token);
+        headers.Authorization = token
         body = JSON.stringify({
           cedula: data.username,
           clave: data.password
         })
         const respLogin = await callApi('/api/apiLogin', headers, body)
         if(respLogin.status == 'success'){
-          //setear variables de entorno y crear sesión
+          const user = respLogin
+          delete user.message
+          delete user.status
+          await AsyncStorage.setItem('user', JSON.stringify(user));
           if(respLogin.actualizarClave){
             navigation.navigate("UpdatePassword")
           } else{
