@@ -1,20 +1,61 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import SignInScreen from './src/screens/SignInScreen';
+import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
+import UpdatePasswordScreen from './src/screens/UpdatePasswordScreen';
+import Navigation from './Navigation';
+import {NavigationContainer } from '@react-navigation/native'; 
+import {createNativeStackNavigator } from "@react-navigation/native-stack"; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+const StackNavigator = createNativeStackNavigator();
+const pages = {
+    SignIn: 'SignIn',
+    NavigationStack: 'NavigationStack',
+    ForgotPassword: 'ForgotPassword',
+    UpdatePassword: 'UpdatePassword',
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const App = () => {
+    const [page, setPage] = useState(pages.SignIn)
+    useEffect(() => {
+        getUser()
+    },[])
+    const getUser = async () => {
+        const temp = await AsyncStorage.getItem('user')
+        if(temp){
+            const user = JSON.parse(temp)
+            if(user.actualizarClave){
+                setPage(pages.UpdatePassword)
+            }else{
+                setPage(pages.NavigationStack)
+            }
+        }
+    }
+    return(
+      <NavigationContainer>
+        <StackNavigator.Navigator
+          screenOptions={{headerShown:false}}
+          initialRouteName={page}
+        >
+            <StackNavigator.Screen
+                name= {pages.SignIn}
+                component={SignInScreen}
+            />
+            <StackNavigator.Screen
+                name={pages.NavigationStack}
+                component={Navigation}
+            />
+            <StackNavigator.Screen
+                name={pages.ForgotPassword}
+                component={ForgotPasswordScreen}
+            />
+            <StackNavigator.Screen
+                name={pages.UpdatePassword}
+                component={UpdatePasswordScreen}
+            />
+        </StackNavigator.Navigator>
+        </NavigationContainer>
+    )
+}
+export default App;
