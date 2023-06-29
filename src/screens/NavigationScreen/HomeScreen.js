@@ -27,6 +27,8 @@ const HomeScreen = () => {
           area: user.area,
         })
         const respHorario = await callApi('/api/getHorario', headers, body)
+        
+        console.log('horario',respHorario)
         if(respHorario.status == 'success'){
           setData(respHorario)
           await AsyncStorage.setItem('horario', JSON.stringify(respHorario));

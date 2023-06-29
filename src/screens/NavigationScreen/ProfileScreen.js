@@ -23,26 +23,28 @@ const ProfileScreen = () => {
     await AsyncStorage.multiRemove(['token','user','horario'])
   }
     return(
-       <View>
+       <View style={styles.background}>
             <Text style={styles.title}> Dator Personales</Text>
             <Text style={styles.text}> Nombre: {data.nombre} {data.apellido}</Text>
             <Text style={styles.text}> Celular: {data.celular}</Text>
             {data.rol == 'empleado' && <Text style={styles.text}> Area: {data.area}</Text>}
-            <View style={styles.mainContainer}><CustomButton text="Cerrar Sesión" onPress={logOut}/></View>
+            <View style={styles.button}><CustomButton text="Cerrar Sesión" onPress={logOut}/></View>
         </View>
     
     
     )
-    
-   
 }
     
 const styles = StyleSheet.create({
+    background:{
+        height:'100%',
+        backgroundColor: '#D9F4F8',
+    },
     title:{
         textAlign: 'center',
         fontSize: 30,
         marginTop:30,
-        marginBottom:20,
+        marginBottom:30,
         
     },
     text:{
@@ -51,12 +53,9 @@ const styles = StyleSheet.create({
         color: '#091585',
         padding: 20,
         },
-    mainContainer: {
-            padding:100,
-            alignItems: 'center',
-        },
     button:{
         alignItems:'center',
+        marginTop:135,
     },
 
 })

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import {Text, View, StyleSheet} from"react-native";
+import {View, StyleSheet} from"react-native";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { useNavigation } from '@react-navigation/native'; 
 import MapView ,{Marker} from "react-native-maps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const MapScreen = () => {
+const LocationScreen = () => {
 
     const navigation = useNavigation();
     const [data, setData] = useState({});
@@ -22,11 +22,7 @@ const MapScreen = () => {
 
     return(
         <View style={styles.background}>
-            <View style={styles.button}>
-                <CustomButton 
-                onPress={() => navigation.navigate("ListaStackScreen")}
-                text="Lista Recorrido" />
-                <MapView
+            <MapView
                 style={styles.map}
                 initialRegion={{
                     latitude: data?.ubicacion?.latitud ? data.ubicacion.latitud : '-0.17885',
@@ -40,12 +36,9 @@ const MapScreen = () => {
                         latitude: data?.ubicacion?.latitud ? data.ubicacion.latitud : '-0.17885',
                         longitude: data?.ubicacion?.longitud ? data.ubicacion.longitud : '-78.4782',
                     }}
-                    pinColor='#00b8d4'
-                    
+                    pinColor='red'
                 />
-                </MapView>
-  
-            </View>
+            </MapView>
         </View>
     )
 
