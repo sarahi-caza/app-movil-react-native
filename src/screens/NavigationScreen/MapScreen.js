@@ -40,20 +40,7 @@ const MapScreen = () => {
       getData();
   }, [])
 
-  const getPermisoUbicacion = async() =>{
-    let {status} = await Location.requestForegroundPermissionsAsync();
-    if(status !== 'granted') {
-        console.log (status)
-        alert('Permiso denegado')
-        return;
-    }
-    let location = await Location.getCurrentPositionAsync({});
-    const ubicacionActual = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-    }
-    setOrigen(ubicacionActual)
-  }
+  
     return(
         <View style={styles.background}>
             <View style={styles.button}>
