@@ -31,7 +31,13 @@ const UpdatePasswordScreen = () => {
             })
             const respClave = await callApi('/api/actualizarPwd', headers, body)
             if(respClave.status == 'success'){
-                navigation.navigate("NavigationStack")
+                user.actualizarClave = false
+                await AsyncStorage.setItem('user', JSON.stringify(user));
+                if(respLogin.actualizarUbicacion){
+                    navigation.navigate("LocationScreen")
+                } else {
+                    navigation.navigate("NavigationStack")
+                }
             }
         } else{
             console.log('Contraseñas son diferentes')

@@ -49,8 +49,13 @@ const SignInScreen = () => {
           await AsyncStorage.setItem('user', JSON.stringify(user));
           if(respLogin.actualizarClave){
             navigation.navigate("UpdatePassword")
-          } else{
-            navigation.navigate("NavigationStack")
+          } else {
+            if(respLogin.actualizarUbicacion){
+              navigation.navigate("LocationScreen")
+            } else {
+              navigation.navigate("NavigationStack")
+            }
+            
           }
         }else{
           console.log(respLogin.message)
