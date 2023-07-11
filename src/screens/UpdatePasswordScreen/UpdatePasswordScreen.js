@@ -33,7 +33,7 @@ const UpdatePasswordScreen = () => {
             if(respClave.status == 'success'){
                 user.actualizarClave = false
                 await AsyncStorage.setItem('user', JSON.stringify(user));
-                if(respLogin.actualizarUbicacion){
+                if(user.actualizarUbicacion){
                     navigation.navigate("LocationScreen")
                 } else {
                     navigation.navigate("NavigationStack")
