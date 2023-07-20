@@ -24,7 +24,6 @@ const ForgotPasswordScreen = () => {
         })
         const respClave = await callApi('/api/olvidoClave', headers, body)
         if(respClave.status == 'success'){
-            console.log(respClave.clave)
             navigation.navigate("SignIn")
         } else{
             console.log(respClave.message)

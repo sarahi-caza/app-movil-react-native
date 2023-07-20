@@ -22,24 +22,44 @@ const HomeScreen = () => {
           'Content-Type': 'application/json',
           Authorization: token
         }
-        const body = JSON.stringify({
-          id_usuario: user.id_usuario,
-          area: user.area,
-        })
-        const respHorario = await callApi('/api/getHorario', headers, body)
+        if (user.rol == 'empleado'){
+          const body = JSON.stringify({
+            id_usuario: user.id_usuario,
+            area: user.area,
+          })
+          const respHorario = await callApi('/api/getHorario', headers, body)
+          
+          console.log('horario',respHorario)
+          if(respHorario.status == 'success'){
+            setData(respHorario)
+            await AsyncStorage.setItem('horario', JSON.stringify(respHorario));
+          }
+        }else if(user.rol == 'chofer'){
+          const diasArray = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado']
+          const fechaActual = new Date()
+          const diaActual = fechaActual.getDay()
+          const dia = diasArray[diaActual]
+          const body = JSON.stringify({
+            id_usuario: user.id_usuario,
+            dia: dia,
+          })
+          console.log (dia)
+          const respListaChofer = await callApi('/api/listaRecorridoChofer', headers, body)
+          
+          console.log('respListaChofer',respListaChofer)
+          if(respListaChofer.status == 'success'){
+            setData(respListaChofer)
+            await AsyncStorage.setItem('respListaChofer', JSON.stringify(respListaChofer));
+          }
+        } 
         
-        console.log('horario',respHorario)
-        if(respHorario.status == 'success'){
-          setData(respHorario)
-          await AsyncStorage.setItem('horario', JSON.stringify(respHorario));
-        }
       }
       getData();
   }, [])
   return (
     <View style={styles.container}>
-      <Text style={styles.subtitle} >Hola {usuario?.nombre} {usuario?.apellido}, tu horario semanal</Text>
-      <ScrollView>
+    {usuario?.rol=='empleado' && <Text style={styles.subtitle} >Hola {usuario?.nombre} {usuario?.apellido}, tu horario semanal</Text>}
+    {usuario?.rol=='empleado' && <ScrollView>
         <Collapse>
           <CollapseHeader>
             <View>
@@ -110,8 +130,16 @@ const HomeScreen = () => {
             <Text style={styles.active}> {data.domingo} </Text>
           </CollapseBody>
         </Collapse>
-      </ScrollView>
+      </ScrollView>}
+      {usuario?.rol=='chofer' &&
+        <Text style={styles.subtitle} >Hola {usuario?.nombre} {usuario?.apellido}, tu recorrido son: </Text>
+      }
+      {usuario?.rol=='chofer' && <Text style={styles.headerText}> Ruta: {data.nombre_ruta} </Text>}
+      {usuario?.rol=='chofer' && <Text style={styles.headerText}> Empleados Turno Mañana: {data.lista_matutina} </Text>}
+      {usuario?.rol=='chofer' && <Text style={styles.headerText}> Empleados Turno Noche: {data.lista_nocturna} </Text>}
+    
     </View>
+    
   );
 }
 
