@@ -51,7 +51,6 @@ const MapScreen = () => {
     useEffect(() => {
 
     const getData = async () => {
-        
         const token = await AsyncStorage.getItem('token');
         const diasArray = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado']
         const fechaActual = new Date()
@@ -70,10 +69,8 @@ const MapScreen = () => {
           dia: dia,
           turno: turno,
         })
-        //console.log('respAPI>>')
         const respLista = await callApi('/api/listaRecorrido', headers, body)
         if(respLista.status == 'success'){
-            //console.log('respLista>>', respLista)
             setLista(respLista)
             const temp = []
             if(data.rol == 'chofer'){
@@ -107,6 +104,14 @@ const MapScreen = () => {
         setPrimeraVez(false);
         getData();
     } 
+
+    if(data?.rol=='empleado'){
+        setTimeout(() => {
+            getData();
+        },5000)
+    }
+    console.log('TIEMPO REAL origen',origen)
+
   }, [origen])
 
 useEffect(() => {
@@ -193,7 +198,7 @@ useEffect(() => {
             }else{
                 setTimeout(() => {
                     getUbicacionReal()
-                },10000)
+                },5000)
             }
         }
         console.log('TIEMPO REAL',enLinea)
