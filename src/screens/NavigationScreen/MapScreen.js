@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
 import {Text, View, StyleSheet} from"react-native";
 import CustomButton from "../../components/CustomButton/CustomButton";
@@ -8,6 +8,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import MapViewDirections from 'react-native-maps-directions';
 import callApi from '../../lib/api';
 import rutaOptimaAlgoritmo from '../../lib/rutaOptimaAlgoritmo';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import { notificaciones } from '../../hooks/notificaciones';
+import apiNotificacion from '../../lib/apiNotificacion';
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
 
 const MapScreen = () => {
 
@@ -30,6 +42,11 @@ const MapScreen = () => {
         latitude: null,
         longitude: null,
     })
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+    const {crearNotificacion,obtenrTokenCelular: obtenerTokenCelular}=notificaciones()
 
     useEffect(() => {
 
@@ -53,8 +70,10 @@ const MapScreen = () => {
           dia: dia,
           turno: turno,
         })
+        //console.log('respAPI>>')
         const respLista = await callApi('/api/listaRecorrido', headers, body)
         if(respLista.status == 'success'){
+            //console.log('respLista>>', respLista)
             setLista(respLista)
             const temp = []
             if(data.rol == 'chofer'){
@@ -69,7 +88,7 @@ const MapScreen = () => {
             }
             
             for(const emp of respLista.lista_empleados){
-                if(emp.ubicacion != undefined && emp.ubicacion.latitud != undefined && emp.ubicacion.longitud != undefined){
+                if(!!emp.ubicacion && emp.ubicacion.latitud && !!emp.ubicacion.longitud){
                     let ubicacion = {
                         latitude: emp.ubicacion?.latitud,
                         longitude: emp.ubicacion?.longitud,
@@ -109,8 +128,10 @@ useEffect(() => {
             }
         }
         nodos.finish={}
-        setNodos(nodos)
-        
+        if(Object.keys(nodos).length>3){
+            setNodos(nodos)
+        }
+        //console.log('NODOS=======>',nodos)
     }
 },[puntosCasas]) 
 
@@ -148,19 +169,61 @@ useEffect(() => {
             longitude: location.coords.longitude,
         }
         setEnLinea(ubicacionActual)
+        await actualizarTiempoReal()
     }
-    /*useEffect(() => {
+    const actualizarTiempoReal = async() =>{
+        const token = await AsyncStorage.getItem('token');
+        const headers1 = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: token
+        }
+        const body1 = JSON.stringify({
+            id_usuario: data.id_usuario,
+            latitud: enLinea.latitude,
+            longitud: enLinea.longitude,
+        })
+        console.log('body1', body1)
+        await callApi('/api/actualizarTiempoReal', headers1, body1)
+    }
+    useEffect(() => {
         if(data?.rol=='chofer'){
             if(!enLinea.latitude){
                 getUbicacionReal()
             }else{
                 setTimeout(() => {
                     getUbicacionReal()
-                },5000)
+                },10000)
             }
         }
         console.log('TIEMPO REAL',enLinea)
-    }, [enLinea])*/
+    }, [enLinea])
+
+    //notificaciones
+    
+
+    useEffect(() => {
+        obtenerTokenCelular().then(token => setExpoPushToken(token));
+            
+    }, []);
+
+    useEffect(() => {
+        if(expoPushToken){
+            const body= [
+                {
+                    to: expoPushToken,
+                    title:"Notificacion AirWay",
+                    body:"Estoy",
+                    sound:"default"
+                }
+            ]
+            nuevaNotificacion(body)  
+        }            
+    }, [expoPushToken])
+    const nuevaNotificacion = async (body) => {
+        await crearNotificacion(body)
+    }
+
 
     return(
         <View style={styles.background}>
