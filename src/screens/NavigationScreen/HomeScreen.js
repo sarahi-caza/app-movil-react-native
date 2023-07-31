@@ -135,8 +135,8 @@ const HomeScreen = () => {
         <Text style={styles.subtitle} >Hola {usuario?.nombre} {usuario?.apellido}, tu recorrido son: </Text>
       }
       {usuario?.rol=='chofer' && <Text style={styles.headerText}> Ruta: {data.nombre_ruta} </Text>}
-      {usuario?.rol=='chofer' && <Text style={styles.headerText}> Empleados Turno Mañana: {data.lista_matutina} </Text>}
-      {usuario?.rol=='chofer' && <Text style={styles.headerText}> Empleados Turno Noche: {data.lista_nocturna} </Text>}
+      {usuario?.rol=='chofer' && <Text style={styles.headerText}> Empleados Turno Mañana: {data.lista_matutina?.length} </Text>}
+      {usuario?.rol=='chofer' && <Text style={styles.headerText}> Empleados Turno Noche: {data.lista_nocturna?.length} </Text>}
     
     </View>
     

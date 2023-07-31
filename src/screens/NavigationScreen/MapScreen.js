@@ -30,6 +30,7 @@ const MapScreen = () => {
         latitude: null,
         longitude: null,
     })
+    const [turnoGlobal, setTurnoGlobal] = useState(null);
     
     const destino = {latitude: -0.1267707974354061, longitude: -78.35948547634963};
     const GOOGLE_MAPS_APIKEY = 'AIzaSyDRZpcY9MU5c1atDcgLv4Cyur78hT71YMI';
@@ -46,35 +47,43 @@ const MapScreen = () => {
     const [notification, setNotification] = useState(false);
     const notificationListener = useRef();
     const responseListener = useRef();
-    const {crearNotificacion,obtenrTokenCelular: obtenerTokenCelular}=notificaciones()
-
+    const {crearNotificacion, obtenerTokenCelular}=notificaciones();
+    const [horarioDefinido, setHorarioDefinido] = useState(null); 
+    const diasArray = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado']
+    const [idEmpleado, setIdEmpleado] = useState (null);
+        
     useEffect(() => {
-
     const getData = async () => {
         const token = await AsyncStorage.getItem('token');
-        const diasArray = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado']
         const fechaActual = new Date()
         const diaActual = fechaActual.getDay()
         const dia = diasArray[diaActual]  
-        const horario = JSON.parse(await AsyncStorage.getItem('horario'));
-        const turno = horario[dia].substring(0,1).toUpperCase()
-            
+        const turno = horarioDefinido[dia].substring(0,1).toUpperCase()
+        setTurnoGlobal(turno)
         const headers = {
           Accept: 'application/json',
           'Content-Type': 'application/json',
           Authorization: token
         }
         const body = JSON.stringify({
-          id_usuario: data.id_usuario,
+          id_usuario: data.rol == 'empleado' ? data.id_usuario : idEmpleado,
           dia: dia,
           turno: turno,
         })
+        console.log('BODy:::', body, data.id_usuario, idEmpleado)
         const respLista = await callApi('/api/listaRecorrido', headers, body)
         if(respLista.status == 'success'){
             setLista(respLista)
             const temp = []
             if(data.rol == 'chofer'){
-                temp.push(origen)
+                let location = await Location.getCurrentPositionAsync({});
+                const ubicacionActual = {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                }
+                temp.push(ubicacionActual)
+                setOrigen(ubicacionActual)
+                            
             }else{
                 let ubicacionChofer = {
                     latitude: respLista.ubicacionChofer.latitud,
@@ -100,19 +109,19 @@ const MapScreen = () => {
             }
         }
     }
-    if(origen.latitude && primeraVez){
+    if(origen.latitude && primeraVez && horarioDefinido){
         setPrimeraVez(false);
         getData();
     } 
 
-    if(data?.rol=='empleado'){
+    if(horarioDefinido){
         setTimeout(() => {
             getData();
         },5000)
     }
-    console.log('TIEMPO REAL origen',origen)
+    console.log('TIEMPO REAL origen',origen, primeraVez, horarioDefinido)
 
-  }, [origen])
+  }, [origen, horarioDefinido, idEmpleado])
 
 useEffect(() => {
     //grafo de los puntos disponibles sin pesos 
@@ -174,9 +183,9 @@ useEffect(() => {
             longitude: location.coords.longitude,
         }
         setEnLinea(ubicacionActual)
-        await actualizarTiempoReal()
+        await actualizarTiempoReal(ubicacionActual)
     }
-    const actualizarTiempoReal = async() =>{
+    const actualizarTiempoReal = async(ubicacionActual) =>{
         const token = await AsyncStorage.getItem('token');
         const headers1 = {
             Accept: 'application/json',
@@ -185,24 +194,25 @@ useEffect(() => {
         }
         const body1 = JSON.stringify({
             id_usuario: data.id_usuario,
-            latitud: enLinea.latitude,
-            longitud: enLinea.longitude,
+            latitud: ubicacionActual.latitude,
+            longitud: ubicacionActual.longitude,
         })
-        console.log('body1', body1)
+        console.log('body2==>>', body1)
         await callApi('/api/actualizarTiempoReal', headers1, body1)
     }
     useEffect(() => {
         if(data?.rol=='chofer'){
-            if(!enLinea.latitude){
+            getUbicacionReal()
+    /*        if(!enLinea.latitude){
                 getUbicacionReal()
             }else{
                 setTimeout(() => {
                     getUbicacionReal()
                 },5000)
-            }
+            }*/
         }
         console.log('TIEMPO REAL',enLinea)
-    }, [enLinea])
+    }, [origen])
 
     //notificaciones
     
@@ -229,14 +239,59 @@ useEffect(() => {
         await crearNotificacion(body)
     }
 
+    const obtenerHorario = async () => {
+        
+        if(data.rol=='empleado'){
+            const horario = await AsyncStorage.getItem('horario');
+            console.log('HORA:::', horario)
+            if(horario){
+                setHorarioDefinido(JSON.parse(horario))
+            }
+        }
+    }
+    useEffect(()=> {
+        obtenerHorario()
+    }, [data])
+    const seleccionarHorario = async (turno) =>{
+        const fechaActual = new Date()
+        const diaActual = fechaActual.getDay()
+        const dia = diasArray[diaActual]
+        const horario = {}
+        horario[dia]=turno
+        const respListaChofer = await AsyncStorage.getItem('respListaChofer');
+        if(respListaChofer){
+            const respuesta = JSON.parse(respListaChofer)
+            //console.log('respuesta', respuesta.lista_matutina, respuesta.lista_nocturna, turno )
+            if(turno=='M' && respuesta.lista_matutina?.length>0){
+                setIdEmpleado(respuesta.lista_matutina[0])
+                setHorarioDefinido(horario)
+            }else if(turno=='N' && respuesta.lista_nocturna?.length>0){
+                setIdEmpleado(respuesta.lista_nocturna[0])
+                setHorarioDefinido(horario)
+            }else{
+                alert('NO HAY ??????')
+            }
+            
+        }
+    }
 
     return(
         <View style={styles.background}>
+            {turnoGlobal != 'L' && 
             <View style={styles.button}>
+                {data?.rol=='empleado' && 
                 <CustomButton 
-                onPress={() => navigation.navigate("Lista")}
-                text="Lista Recorrido" />
-                
+                    onPress={() => navigation.navigate("Lista")}
+                    text="Lista Recorrido" />}
+                {data?.rol=='chofer' &&
+                <View>
+                <CustomButton 
+                    onPress={() => seleccionarHorario('M')}
+                    text="Día" />
+                <CustomButton 
+                    onPress={() => seleccionarHorario('N')}
+                    text="Noche" />
+                </View>}
                 {origen.latitude && <MapView
                     style={styles.map}
                     initialRegion={{
@@ -315,7 +370,11 @@ useEffect(() => {
                     )
                 })
                  }
-            </View>
+            </View>}
+            {turnoGlobal == 'L' && 
+            <View style={{...styles.button, marginTop: 250 }}>
+                <Text style={{fontSize: 50}}>Día Libre</Text>
+            </View>}
         </View>
     )
 

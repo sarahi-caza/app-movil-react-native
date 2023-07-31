@@ -43,6 +43,6 @@ export const notificaciones = () =>{
         return token;
       }
     return {
-        crearNotificacion, obtenrTokenCelular: obtenerTokenCelular
+        crearNotificacion, obtenerTokenCelular
     }
 }
