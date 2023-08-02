@@ -9,6 +9,7 @@ import {NavigationContainer } from '@react-navigation/native';
 import {createNativeStackNavigator } from "@react-navigation/native-stack"; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LocationScreen from './src/screens/LocationScreen/LocationScreen';
+import { notificaciones } from './src/hooks/notificaciones';
 
 
 const StackNavigator = createNativeStackNavigator();
@@ -22,10 +23,18 @@ const pages = {
 
 const App = () => {
     const [page, setPage] = useState(pages.SignIn)
+    const {obtenerTokenCelular}=notificaciones();
+    
     useEffect(() => {
         getPermisoUbicacion()
         getUser()
+        tokenCelular()
     },[])
+    //notificaciones
+    const tokenCelular = () => {
+        obtenerTokenCelular().then(async (token) => await AsyncStorage.setItem('tokenCelular', token));
+    }
+
     const getUser = async () => {
         const temp = await AsyncStorage.getItem('user')
         if(temp){

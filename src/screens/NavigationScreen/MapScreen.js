@@ -43,7 +43,6 @@ const MapScreen = () => {
         latitude: null,
         longitude: null,
     })
-    const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
     const notificationListener = useRef();
     const responseListener = useRef();
@@ -216,13 +215,7 @@ useEffect(() => {
 
     //notificaciones
     
-
-    useEffect(() => {
-        obtenerTokenCelular().then(token => setExpoPushToken(token));
-            
-    }, []);
-
-    useEffect(() => {
+    /*useEffect(() => {
         if(expoPushToken){
             const body= [
                 {
@@ -237,7 +230,7 @@ useEffect(() => {
     }, [expoPushToken])
     const nuevaNotificacion = async (body) => {
         await crearNotificacion(body)
-    }
+    }*/
 
     const obtenerHorario = async () => {
         
@@ -284,7 +277,7 @@ useEffect(() => {
                     onPress={() => navigation.navigate("Lista")}
                     text="Lista Recorrido" />}
                 {data?.rol=='chofer' &&
-                <View>
+                <View style={styles.buttonDN}>
                 <CustomButton 
                     onPress={() => seleccionarHorario('M')}
                     text="Día" />
@@ -387,7 +380,15 @@ const styles = StyleSheet.create({
     },
     button:{
         alignItems:'center',
+
     },
+    /*buttonDN:{
+        width:'25%',
+        alignItems: 'left',
+    
+        
+
+    },*/
     map:{
         width:'100%',
         maxHeight:'100%',
