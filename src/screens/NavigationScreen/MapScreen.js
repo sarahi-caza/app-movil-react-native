@@ -7,6 +7,7 @@ import MapView ,{Marker} from "react-native-maps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MapViewDirections from 'react-native-maps-directions';
 import callApi from '../../lib/api';
+import apiDistancia from '../../lib/apiDistancia';
 import rutaOptimaAlgoritmo from '../../lib/rutaOptimaAlgoritmo';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -43,7 +44,7 @@ const MapScreen = () => {
         latitude: null,
         longitude: null,
     })
-    const [notification, setNotification] = useState(false);
+    const [notification, setNotification] = useState([]);
     const notificationListener = useRef();
     const responseListener = useRef();
     const {crearNotificacion, obtenerTokenCelular}=notificaciones();
@@ -74,7 +75,8 @@ const MapScreen = () => {
         if(respLista.status == 'success'){
             setLista(respLista)
             const temp = []
-            if(data.rol == 'chofer'){
+            const tempNotificacion = []
+            /*if(data.rol == 'chofer'){
                 let location = await Location.getCurrentPositionAsync({});
                 const ubicacionActual = {
                     latitude: location.coords.latitude,
@@ -83,15 +85,15 @@ const MapScreen = () => {
                 temp.push(ubicacionActual)
                 setOrigen(ubicacionActual)
                             
-            }else{
+            }else{*/
                 let ubicacionChofer = {
                     latitude: respLista.ubicacionChofer.latitud,
                     longitude: respLista.ubicacionChofer.longitud,
                 }
                 temp.push(ubicacionChofer)
                 setOrigen(ubicacionChofer)
-            }
-            
+            //}
+            //console.log('GGGGGGGGGGGGGG', respLista.lista_empleados)
             for(const emp of respLista.lista_empleados){
                 if(!!emp.ubicacion && emp.ubicacion.latitud && !!emp.ubicacion.longitud){
                     let ubicacion = {
@@ -99,12 +101,23 @@ const MapScreen = () => {
                         longitude: emp.ubicacion?.longitud,
                     }
                     temp.push(ubicacion)
+                    if(!!emp.tokenCelular){
+                        const objetoNotificacion={
+                            ubicacion: ubicacion,
+                            token: emp.tokenCelular,
+                            esNotificado: false
+                        }
+                        tempNotificacion.push(objetoNotificacion)
+                    }
                 }
                 
             } 
             temp.push(destino)
             if(temp.length > 2){
                 setPuntosCasas(temp)
+            }
+            if(tempNotificacion.length > 0 && notification.length==0){
+                setNotification(tempNotificacion)
             }
         }
     }
@@ -114,9 +127,10 @@ const MapScreen = () => {
     } 
 
     if(horarioDefinido){
-        setTimeout(() => {
+        setTimeout(async() => {
             getData();
-        },5000)
+            
+        },30000)
     }
     console.log('TIEMPO REAL origen',origen, primeraVez, horarioDefinido)
 
@@ -183,6 +197,30 @@ useEffect(() => {
         }
         setEnLinea(ubicacionActual)
         await actualizarTiempoReal(ubicacionActual)
+        console.log('VALENOTIFICACION',notification)
+        if(notification.length>0){
+            for(let i=0; i<notification.length; i++){
+                const respDistancia= await apiDistancia (
+                `${ubicacionActual.latitude},${ubicacionActual.longitude}`,
+                `${notification[i].ubicacion.latitude},${notification[i].ubicacion.longitude}`);
+                let duracionOrigenNodos = respDistancia.rows?.[0]?.elements?.[0]?.duration?.value
+                let mensajeTiempo = respDistancia.rows?.[0]?.elements?.[0]?.duration?.text
+                console.log('HHHHHHHHHHHHHHHHH====>>>>>',respDistancia.rows?.[0]?.elements?.[0]?.duration?.value)
+                if(duracionOrigenNodos<=300 && !notification[i].esNotificado ){
+                    let body= [
+                        {
+                            to: notification[i].token,
+                            title:"Notificacion AirWay",
+                            body:"Estoy a " + mensajeTiempo,
+                            sound:"default"
+                        }
+                    ]
+                    nuevaNotificacion(body)  
+                    notification[i].esNotificado=true
+                }
+            }
+            
+        }
     }
     const actualizarTiempoReal = async(ubicacionActual) =>{
         const token = await AsyncStorage.getItem('token');
@@ -202,13 +240,6 @@ useEffect(() => {
     useEffect(() => {
         if(data?.rol=='chofer'){
             getUbicacionReal()
-    /*        if(!enLinea.latitude){
-                getUbicacionReal()
-            }else{
-                setTimeout(() => {
-                    getUbicacionReal()
-                },5000)
-            }*/
         }
         console.log('TIEMPO REAL',enLinea)
     }, [origen])
@@ -227,10 +258,10 @@ useEffect(() => {
             ]
             nuevaNotificacion(body)  
         }            
-    }, [expoPushToken])
+    }, [expoPushToken])*/
     const nuevaNotificacion = async (body) => {
         await crearNotificacion(body)
-    }*/
+    }
 
     const obtenerHorario = async () => {
         
@@ -275,15 +306,22 @@ useEffect(() => {
                 {data?.rol=='empleado' && 
                 <CustomButton 
                     onPress={() => navigation.navigate("Lista")}
-                    text="Lista Recorrido" />}
+                    text="Lista Recorrido" 
+                    
+                    />}
                 {data?.rol=='chofer' &&
+                <View style={{flexDirection:'row', alignItems:'center'}}>
                 <View style={styles.buttonDN}>
+                    
                 <CustomButton 
                     onPress={() => seleccionarHorario('M')}
                     text="Día" />
+                </View>
+                <View style={styles.buttonDN}>
                 <CustomButton 
                     onPress={() => seleccionarHorario('N')}
                     text="Noche" />
+                </View>
                 </View>}
                 {origen.latitude && <MapView
                     style={styles.map}
@@ -352,6 +390,7 @@ useEffect(() => {
                                             if(i== Object.keys(nodos).length-2 && j== Object.keys(nodos[clave]).length-1){
                                                 setPuntosRecorrido(rutaOptimaAlgoritmo(nodos))
                                             }
+
                                         }}
                                     />
                                 )
@@ -380,15 +419,15 @@ const styles = StyleSheet.create({
     },
     button:{
         alignItems:'center',
+        width:'100%',
 
     },
-    /*buttonDN:{
-        width:'25%',
-        alignItems: 'left',
-    
-        
+    buttonDN:{
+        flexDirection:'column', 
+        width:'50%', 
+        alignItems:'center', 
 
-    },*/
+    },
     map:{
         width:'100%',
         maxHeight:'100%',

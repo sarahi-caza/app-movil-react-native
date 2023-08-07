@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     container:{
         width: '80%',
         padding:10,
-        marginVertical: 35,
+        marginVertical: 25,
         alignItems: 'center',
         borderRadius: 5
     },
