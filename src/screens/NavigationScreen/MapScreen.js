@@ -76,7 +76,7 @@ const MapScreen = () => {
             setLista(respLista)
             const temp = []
             const tempNotificacion = []
-            /*if(data.rol == 'chofer'){
+            if(data.rol == 'chofer'){
                 let location = await Location.getCurrentPositionAsync({});
                 const ubicacionActual = {
                     latitude: location.coords.latitude,
@@ -85,14 +85,14 @@ const MapScreen = () => {
                 temp.push(ubicacionActual)
                 setOrigen(ubicacionActual)
                             
-            }else{*/
+            }else{
                 let ubicacionChofer = {
                     latitude: respLista.ubicacionChofer.latitud,
                     longitude: respLista.ubicacionChofer.longitud,
                 }
                 temp.push(ubicacionChofer)
                 setOrigen(ubicacionChofer)
-            //}
+            }
             //console.log('GGGGGGGGGGGGGG', respLista.lista_empleados)
             for(const emp of respLista.lista_empleados){
                 if(!!emp.ubicacion && emp.ubicacion.latitud && !!emp.ubicacion.longitud){
@@ -244,21 +244,6 @@ useEffect(() => {
         console.log('TIEMPO REAL',enLinea)
     }, [origen])
 
-    //notificaciones
-    
-    /*useEffect(() => {
-        if(expoPushToken){
-            const body= [
-                {
-                    to: expoPushToken,
-                    title:"Notificacion AirWay",
-                    body:"Estoy",
-                    sound:"default"
-                }
-            ]
-            nuevaNotificacion(body)  
-        }            
-    }, [expoPushToken])*/
     const nuevaNotificacion = async (body) => {
         await crearNotificacion(body)
     }
