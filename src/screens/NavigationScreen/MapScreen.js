@@ -105,7 +105,10 @@ const MapScreen = () => {
                         const objetoNotificacion={
                             ubicacion: ubicacion,
                             token: emp.tokenCelular,
-                            esNotificado: false
+                            esNotificado: false,
+                            esConfirmado: false,
+                            idUsuario: emp.id_usuario,
+                            nombre: emp.nombre,
                         }
                         tempNotificacion.push(objetoNotificacion)
                     }
@@ -218,6 +221,11 @@ useEffect(() => {
                     nuevaNotificacion(body)  
                     notification[i].esNotificado=true
                 }
+
+                if(duracionOrigenNodos<=30 && !notification[i].esConfirmado ){
+                    confirmacionChofer(notification[i].idUsuario, notification[i].nombre)
+                    notification[i].esConfirmado=true
+                }
             }
             
         }
@@ -278,10 +286,38 @@ useEffect(() => {
                 setIdEmpleado(respuesta.lista_nocturna[0])
                 setHorarioDefinido(horario)
             }else{
-                alert('NO HAY ??????')
+                alert('NO HAY EMPLEADOS PARA EL RECORRIDO')
             }
             
         }
+    }
+
+    // mensaje de confirmación para chofer
+    const confirmacionChofer = (idUsuario, nombre) => {
+        const fechaActual = new Date()
+        const diaActual = fechaActual.getDay()
+        const dia = diasArray[diaActual]
+        Alert.alert('Confirmación', 'Confirme si el pasajero subio al recorrido', 
+          [
+            {text:'SI', style:'default', onPress:()=>{guardarConfirmacion(idUsuario, true, nombre, dia)}},
+            {text:'NO', style:'destructive', onPress:()=>{guardarConfirmacion(idUsuario, false, nombre, dia)}},
+          ]
+        )
+    }
+    const guardarConfirmacion = async(idUsuario, confirmacion, nombre, dia) => {
+        const token = await AsyncStorage.getItem('token');
+        const headers = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: token
+          }
+        const body = JSON.stringify({
+            id_usuario: idUsuario,
+            nombre: nombre,
+            dia: dia,
+            confirmacion: confirmacion,
+        })
+        await callApi ('/api/choferConfirmacion', headers, body)
     }
 
     return(
@@ -300,7 +336,7 @@ useEffect(() => {
                     
                 <CustomButton 
                     onPress={() => seleccionarHorario('M')}
-                    text="Día" />
+                    text="Mañana" />
                 </View>
                 <View style={styles.buttonDN}>
                 <CustomButton 
