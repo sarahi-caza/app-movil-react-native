@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Image, Dimensions, ScrollView, Alert } from "react-native";
+import { StyleSheet, View, Text, Image, Dimensions, ScrollView} from "react-native";
 import Logo from "../../../assets/images/logoAW.png";
 import Svg, {Path, Defs, LinearGradient, Stop} from 'react-native-svg';
 const { width, height} = Dimensions.get('window')

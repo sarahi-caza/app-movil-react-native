@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
-import {Text, View, StyleSheet} from"react-native";
+import {Text, View, StyleSheet, Alert} from"react-native";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { useNavigation } from '@react-navigation/native'; 
 import MapView ,{Marker} from "react-native-maps";
@@ -9,10 +9,8 @@ import MapViewDirections from 'react-native-maps-directions';
 import callApi from '../../lib/api';
 import apiDistancia from '../../lib/apiDistancia';
 import rutaOptimaAlgoritmo from '../../lib/rutaOptimaAlgoritmo';
-import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { notificaciones } from '../../hooks/notificaciones';
-import apiNotificacion from '../../lib/apiNotificacion';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -70,7 +68,7 @@ const MapScreen = () => {
           dia: dia,
           turno: turno,
         })
-        console.log('BODy:::', body, data.id_usuario, idEmpleado)
+        //console.log('BODy:::', body, data.id_usuario, idEmpleado)
         const respLista = await callApi('/api/listaRecorrido', headers, body)
         if(respLista.status == 'success'){
             setLista(respLista)
@@ -116,7 +114,7 @@ const MapScreen = () => {
                 
             } 
             temp.push(destino)
-            if(temp.length > 2){
+            if(temp.length > 2 && puntosCasas.length == 0){
                 setPuntosCasas(temp)
             }
             if(tempNotificacion.length > 0 && notification.length==0){
@@ -133,9 +131,9 @@ const MapScreen = () => {
         setTimeout(async() => {
             getData();
             
-        },30000)
+        },7500)
     }
-    console.log('TIEMPO REAL origen',origen, primeraVez, horarioDefinido)
+    //console.log('TIEMPO REAL origen',origen, primeraVez, horarioDefinido)
 
   }, [origen, horarioDefinido, idEmpleado])
 
@@ -189,7 +187,7 @@ useEffect(() => {
                 longitude: -78.481451,
             })
         }
-        console.log('userMapa>>',user)
+        //console.log('userMapa>>',user)
 
     }
     const getUbicacionReal = async() =>{
@@ -200,7 +198,7 @@ useEffect(() => {
         }
         setEnLinea(ubicacionActual)
         await actualizarTiempoReal(ubicacionActual)
-        console.log('VALENOTIFICACION',notification)
+        //console.log('VALENOTIFICACION',notification)
         if(notification.length>0){
             for(let i=0; i<notification.length; i++){
                 const respDistancia= await apiDistancia (
@@ -208,7 +206,7 @@ useEffect(() => {
                 `${notification[i].ubicacion.latitude},${notification[i].ubicacion.longitude}`);
                 let duracionOrigenNodos = respDistancia.rows?.[0]?.elements?.[0]?.duration?.value
                 let mensajeTiempo = respDistancia.rows?.[0]?.elements?.[0]?.duration?.text
-                console.log('HHHHHHHHHHHHHHHHH====>>>>>',respDistancia.rows?.[0]?.elements?.[0]?.duration?.value)
+                //console.log('HHHHHHHHHHHHHHHHH====>>>>>',respDistancia.rows?.[0]?.elements?.[0]?.duration?.value)
                 if(duracionOrigenNodos<=300 && !notification[i].esNotificado ){
                     let body= [
                         {
@@ -242,15 +240,37 @@ useEffect(() => {
             latitud: ubicacionActual.latitude,
             longitud: ubicacionActual.longitude,
         })
-        console.log('body2==>>', body1)
+        //console.log('body2==>>', body1)
         await callApi('/api/actualizarTiempoReal', headers1, body1)
     }
     useEffect(() => {
         if(data?.rol=='chofer'){
             getUbicacionReal()
+        }else{
+            removerMapaEmpleado();
         }
-        console.log('TIEMPO REAL',enLinea)
+        //console.log('TIEMPO REAL',enLinea)
     }, [origen])
+
+    const removerMapaEmpleado = async() => {
+        if(notification.length>0){
+            for(let i=0; i<notification.length; i++){
+                const respDistancia= await apiDistancia (
+                `${origen.latitude},${origen.longitude}`,
+                `${notification[i].ubicacion.latitude},${notification[i].ubicacion.longitude}`);
+                let duracionOrigenNodos = respDistancia.rows?.[0]?.elements?.[0]?.duration?.value
+                if(duracionOrigenNodos<=30 && !notification[i].esConfirmado ){
+                    notification[i].esConfirmado = true
+                        const ubicacionEmpleado = notification[i].ubicacion
+                        const temp = puntosRecorrido.filter(x => x.latitude != ubicacionEmpleado.latitude && x.longitude != ubicacionEmpleado.longitude)
+                        setPuntosRecorrido(temp)
+                        console.log('INDEX', temp, 'PUNTOS RECO', puntosRecorrido, 'UBIEMPELADO', ubicacionEmpleado)
+                    
+                }
+            }
+            
+        }
+    }
 
     const nuevaNotificacion = async (body) => {
         await crearNotificacion(body)
@@ -260,7 +280,7 @@ useEffect(() => {
         
         if(data.rol=='empleado'){
             const horario = await AsyncStorage.getItem('horario');
-            console.log('HORA:::', horario)
+            //console.log('HORA:::', horario)
             if(horario){
                 setHorarioDefinido(JSON.parse(horario))
             }
@@ -317,7 +337,16 @@ useEffect(() => {
             dia: dia,
             confirmacion: confirmacion,
         })
-        await callApi ('/api/choferConfirmacion', headers, body)
+        await callApi ('/api/choferConfirmacion', headers, body).finally(() => {
+            const puntosRemover = notification.filter(x => x.idUsuario == idUsuario);
+            if(puntosRemover.length == 1){
+                const ubicacionEmpleado = puntosRemover[0].ubicacion
+                const temp = puntosRecorrido.filter(x => x.latitude != ubicacionEmpleado.latitude && x.longitude != ubicacionEmpleado.longitude)
+                setPuntosRecorrido(temp)
+                console.log('INDEX', temp, 'PUNTOS RECO', puntosRecorrido, 'UBIEMPELADO', ubicacionEmpleado)
+                
+            }
+        })
     }
 
     return(
@@ -376,7 +405,7 @@ useEffect(() => {
                         />
                     }
                     
-                    {puntosRecorrido.length>0 &&<MapViewDirections
+                    {notification.length>0 &&<MapViewDirections
                         apikey={GOOGLE_MAPS_APIKEY}
                         origin={origen}
                         destination={destino}
@@ -385,8 +414,8 @@ useEffect(() => {
                         strokeColor='blue'
                         strokeWidth={3}
                         onReady={result =>{
-                            console.log('distancia:', result.distance)
-                            console.log('tiempo:', result.duration)
+                            //console.log('distancia:', result.distance)
+                            //console.log('tiempo:', result.duration)
                         }}
                     />}
 
@@ -404,8 +433,8 @@ useEffect(() => {
                                         origin={nodos[clave][valores].origen}
                                         destination={nodos[clave][valores].destino}
                                         onReady={result =>{
-                                            console.log('distancia:==>', result.distance)
-                                            console.log('tiempo::==>', result.duration)
+                                            //console.log('distancia:==>', result.distance)
+                                            //console.log('tiempo::==>', result.duration)
                                             nodos[clave][valores].distancia=result.distance
                                             nodos[clave][valores].tiempo=result.duration
                                             if(i== Object.keys(nodos).length-2 && j== Object.keys(nodos[clave]).length-1){
