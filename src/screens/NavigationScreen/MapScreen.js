@@ -131,7 +131,7 @@ const MapScreen = () => {
         setTimeout(async() => {
             getData();
             
-        },7500)
+        },4000)
     }
     //console.log('TIEMPO REAL origen',origen, primeraVez, horarioDefinido)
 
@@ -381,10 +381,11 @@ useEffect(() => {
                         latitudeDelta: 0.1090,
                         longitudeDelta: 0.1090,
                     }}>
+                    {data?.rol=='empleado' &&
                     <Marker
                         coordinate={origen}
                         pinColor='#00b8d4'
-                    />
+                    />}
                 {puntosRecorrido.length>0 && puntosRecorrido.map ((x,index) => {
                     return (
                         <Marker
@@ -401,7 +402,7 @@ useEffect(() => {
                     {enLinea.latitude && 
                         <Marker
                             coordinate={enLinea}
-                            pinColor='orange'
+                            pinColor='#00b8d4'
                         />
                     }
                     

@@ -90,7 +90,7 @@ const LocationScreen = () => {
                 </MapView>}
                 <CustomButton 
                     onPress={() => saveLocation()}
-                    text="Enviar Ubición Mi Casa" />
+                    text="Enviar Ubicación Mi Casa" />
             </View>
         </View>
     )
