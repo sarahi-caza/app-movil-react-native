@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Text, Image, Dimensions, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, Text, Image, Dimensions, ScrollView} from "react-native";
 import Logo from "../../../assets/images/logoAW.png";
 import Svg, {Path, Defs, LinearGradient, Stop} from 'react-native-svg';
 const { width, height} = Dimensions.get('window')
@@ -15,6 +15,7 @@ const SignInScreen = () => {
   const navigation = useNavigation();
   
   const {control, handleSubmit} = useForm();
+  
 
     const API_EMAIL = 'admin@admin.com'
     const API_PWD = 'admin123'
@@ -49,19 +50,26 @@ const SignInScreen = () => {
           await AsyncStorage.setItem('user', JSON.stringify(user));
           if(respLogin.actualizarClave){
             navigation.navigate("UpdatePassword")
-          } else{
-            navigation.navigate("NavigationStack")
+          } else {
+            if(respLogin.actualizarUbicacion){
+              navigation.navigate("LocationScreen")
+            } else {
+              navigation.navigate("NavigationStack")
+            }
+            
           }
         }else{
           console.log(respLogin.message)
         }
       }
     }
+  
     
     const onForgotPassword = () => {
       navigation.navigate("ForgotPassword")
     }
-    function SvgTop() {
+
+    const SvgTop = () => {
         return (
           <Svg
           width={500}

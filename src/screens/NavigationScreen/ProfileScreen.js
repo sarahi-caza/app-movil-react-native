@@ -24,7 +24,7 @@ const ProfileScreen = () => {
   }
     return(
        <View style={styles.background}>
-            <Text style={styles.title}> Dator Personales</Text>
+            <Text style={styles.title}> Datos Personales</Text>
             <Text style={styles.text}> Nombre: {data.nombre} {data.apellido}</Text>
             <Text style={styles.text}> Celular: {data.celular}</Text>
             {data.rol == 'empleado' && <Text style={styles.text}> Area: {data.area}</Text>}

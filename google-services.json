@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "439628254460",
+    "project_id": "airway-movil",
+    "storage_bucket": "airway-movil.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439628254460:android:f41814809d538c7b575b79",
+        "android_client_info": {
+          "package_name": "ec.edu.utpl.airway"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439628254460-ajo0rbscnii2l04qhabd7hcprnctg97h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAx1cl67y6UsLqAFfk-QY2RZ5H-bsBL_GY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439628254460-ajo0rbscnii2l04qhabd7hcprnctg97h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

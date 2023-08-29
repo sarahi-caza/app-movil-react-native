@@ -14,13 +14,13 @@ const Tab = createBottomTabNavigator();
 const MyTabs = () => {
     return(
         <Tab.Navigator
-            initialRouteName="Home"
+            initialRouteName="Inicio"
             screenOptions={{
                 tabBarActiveTintColor:'#00b8d4',
             }}
         >
             <Tab.Screen 
-                name="Home"
+                name="Inicio"
                 component={HomeScreen}
                 options={{
                     tabBarLabel: 'Inicio',
@@ -41,7 +41,7 @@ const MyTabs = () => {
                 }}
             />
             <Tab.Screen 
-                name="Profile"
+                name="Perfil"
                 component={ProfileScreen}
                 options={{
                     tabBarLabel: 'Perfil',
@@ -59,14 +59,14 @@ const MapStackNavigator = createNativeStackNavigator();
 const MyStack = () => {
     return(
         <MapStackNavigator.Navigator
-            initialRouteName="MapStack"
+            initialRouteName="Mapa Ruta"
         >
             <MapStackNavigator.Screen
-                name="MapStack"
+                name="Mapa Ruta"
                 component={MapScreen}
             />
             <MapStackNavigator.Screen
-                name="ListaStackScreen"
+                name="Lista"
                 component={ListaStackScreen}
             />
         </MapStackNavigator.Navigator>

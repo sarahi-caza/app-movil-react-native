@@ -32,7 +32,7 @@ const ListaScreen = () => {
         const respLista = await callApi('/api/listaRecorrido', headers, body)
           if(respLista.status == 'success'){
           console.log (respLista)
-          const textComponent = respLista.lista_empleados.map((emp, index ) => <Text key={index} style={styles.lista}>{emp}</Text>)
+          const textComponent = respLista.lista_empleados.map((emp, index ) => <Text key={index} style={styles.lista}>{emp.nombre}</Text>)
           respLista.lista_empleados=textComponent
           setData(respLista)
           }

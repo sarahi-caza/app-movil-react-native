@@ -18,6 +18,7 @@ const UpdatePasswordScreen = () => {
         if(data.password == data.repeatPassword){
             const token = await AsyncStorage.getItem('token');
             const user = JSON.parse(await AsyncStorage.getItem('user'));
+            const tokenCelular = await AsyncStorage.getItem('tokenCelular');
                 
             const headers = {
             Accept: 'application/json',
@@ -27,11 +28,18 @@ const UpdatePasswordScreen = () => {
             const body = JSON.stringify({
             id_usuario: user.id_usuario,
             rol: user.rol,
-            newPwd: data.password
+            newPwd: data.password,
+            tokenCelular: tokenCelular
             })
             const respClave = await callApi('/api/actualizarPwd', headers, body)
             if(respClave.status == 'success'){
-                navigation.navigate("NavigationStack")
+                user.actualizarClave = false
+                await AsyncStorage.setItem('user', JSON.stringify(user));
+                if(user.actualizarUbicacion){
+                    navigation.navigate("LocationScreen")
+                } else {
+                    navigation.navigate("NavigationStack")
+                }
             }
         } else{
             console.log('Contraseñas son diferentes')
